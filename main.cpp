@@ -81,7 +81,7 @@ int main()
 
                 
                 float D = 1 / (z+5); // 1/(z + K2) //K2 is taken as 5
-                int X = 40 + 50*D*x, Y = 12 + 50*D*y;
+                int X = 40 + 80*D*x, Y = 12 + 50*D*y;
                 
                 
                 // Varible to store rendered ASCII character in the buffer.
@@ -114,7 +114,7 @@ int main()
         }
         
 		for(int i = 0; i < 10000; i++)
-			for(int j = 0; j < 1000; j++) ;
+			for(int j = 0; j < 10000; j++) ;
    }
 
 
