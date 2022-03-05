@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cmath>
 #include <cstring>
+#include <cstdlib>
 // An implementation of gotoxy() function for smoother animation
 // without scrolling or clearing screen.
 // void gotoxy(SHORT x, SHORT y)
@@ -50,47 +51,50 @@ int main()
     int k;
 
     //z-buffer
-    float z[1760];
+    float zb[1760];
     char b[1760];
     std::cout << "\x1b[2J";
     while (true)
     {
         memset(b, 32, 1760);
-        memset(z, 0, 7040);
-        for (j = 0; j < 6.28; j += 0.07)
+        memset(zb, 0, 7040);
+        for (i = -1; i < 1; i += 0.03)
         {
-            for (i = 0; i < 6.28; i += 0.02)
+            for (j = -1 + abs(i); j < 1 - abs(i); j += 0.03)
             {
                 // We will calculate the position and luminance of each point.
-                float c = sin(i); // sin(phi)
-                float d = cos(j); // cos(theta)
-                float e = sin(A); // sin(A)
-                float f = sin(j); // sin(theta)
-                float g = cos(A); // cos(A)
-                float h = d + 2;  // (R2 + R1cos(theta)) //R2 is taken as 2 here
-                float D = 1 / (c * h * e + f * g + 5); // 1/(z + K2) //K2 is taken as 5
-                float l = cos(i); // cos(phi)
-                float m = cos(B); // cos(B)
-                float n = sin(B); // sin(B)
-              
-                float t = c * h * g - f * e;
+                
+                float sinA = sin(A); // sin(A)
+                float cosA = cos(A); // cos(A)
+                float cosB = cos(B); // cos(B)
+                float sinB = sin(B); // sin(B)
+                float kp = 1 - abs(i) - abs(j);
+                float km = -kp;
+                
+                float zm = km*cosA;
+                float zp = kp*cosA;
+                float k = (zm<zp) ? km : kp;
 
-                // Calculating x (x' since we are multiplting by D) (K1 is 1)
-                int x = 40 + 30 * D * (l * h * m - t * n);
-
-                // Calculating y (y' specifically since we are multiplying by D)
-                int y = 12 + 15 * D * (l * h * n + t * m);
+                float z = j*sinA + k*cosA;
+                float x = i*cosB-sinB*(j*cosA-k*sinA);
+                float y = i*sinB+cosB*(j*cosA-k*sinA);
+                
+                float D = 1 / (z+5); // 1/(z + K2) //K2 is taken as 5
+                
                 
                 // Varible to store rendered ASCII character in the buffer.
                 // We are using a 1D array.
                 int o = x + 80 * y;
 
                 // Luminance
-                int N = 8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n);
-                if (22 > y && y > 0 && x > 0 && 80 > x && D > z[o])
+                float Nx = (i>0)? sqrt(1/3) : -sqrt(1/3);
+                float Ny = (j>0)? sqrt(1/3) : -sqrt(1/3);
+                float Nz = (k>0)? sqrt(1/3) : -sqrt(1/3);
+                int N = 8 * (Nx*sinB + cosB*(Ny*cosA - Nz*sinA) - Ny*sinA -Nz*cosA);
+                if (22 > y && y > 0 && x > 0 && 80 > x && D > zb[o])
                 {
                     // String D in z-buffer
-                    z[o] = D;
+                    zb[o] = D;
 
                     // Choosing ASCII character based on Luminance and storing it in buffer
                     b[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
@@ -105,7 +109,7 @@ int main()
             B += 0.00002;
         }
 
-		for(int i = 0; i < 10000; i++)
+	//	for(int i = 0; i < 10000; i++)
 			for(int j = 0; j < 10000; j++) ;
    }
 
