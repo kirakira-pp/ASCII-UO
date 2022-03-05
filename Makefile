@@ -1,7 +1,7 @@
-all: compile run
+all: compile
 
 compile:
-	@g++ main.cpp -o main
+	@g++ main.cpp -g -o main
 
 run:
 	@./main

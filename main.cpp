@@ -60,7 +60,7 @@ int main()
         memset(zb, 0, 7040);
         for (i = -1; i < 1; i += 0.03)
         {
-            for (j = -1 + abs(i); j < 1 - abs(i); j += 0.03)
+            for (j = -1.0 + fabs(i); j < 1.0 - fabs(i); j += 0.03)
             {
                 // We will calculate the position and luminance of each point.
                 
@@ -68,30 +68,32 @@ int main()
                 float cosA = cos(A); // cos(A)
                 float cosB = cos(B); // cos(B)
                 float sinB = sin(B); // sin(B)
-                float kp = 1 - abs(i) - abs(j);
+                float kp = 1 - fabs(i) - fabs(j);
                 float km = -kp;
                 
                 float zm = km*cosA;
                 float zp = kp*cosA;
                 float k = (zm<zp) ? km : kp;
 
-                float z = j*sinA + k*cosA;
                 float x = i*cosB-sinB*(j*cosA-k*sinA);
                 float y = i*sinB+cosB*(j*cosA-k*sinA);
+                float z = j*sinA + k*cosA;
+
                 
                 float D = 1 / (z+5); // 1/(z + K2) //K2 is taken as 5
+                float X = 40 + 30*D*x, Y = 12 + 15*D*y;
                 
                 
                 // Varible to store rendered ASCII character in the buffer.
                 // We are using a 1D array.
-                int o = x + 80 * y;
+                int o = X + 80 * Y;
 
                 // Luminance
-                float Nx = (i>0)? sqrt(1/3) : -sqrt(1/3);
-                float Ny = (j>0)? sqrt(1/3) : -sqrt(1/3);
-                float Nz = (k>0)? sqrt(1/3) : -sqrt(1/3);
-                int N = 8 * (Nx*sinB + cosB*(Ny*cosA - Nz*sinA) - Ny*sinA -Nz*cosA);
-                if (22 > y && y > 0 && x > 0 && 80 > x && D > zb[o])
+                float Nx = (i>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
+                float Ny = (j>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
+                float Nz = (k>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
+                int N = 8 * (Nx*sinB + cosB*(Ny*cosA - Nz*sinA) - Ny*sinA - Nz*cosA);
+                if (22 > Y && Y > 0 && X > 0 && 80 > X && D > zb[o])
                 {
                     // String D in z-buffer
                     zb[o] = D;
@@ -101,6 +103,7 @@ int main()
                 }
             }
         }
+        
         std::cout << "\x1b[H";
         for (k = 0; k < 1761; k++)
         {
@@ -108,7 +111,7 @@ int main()
             A += 0.00004;
             B += 0.00002;
         }
-
+        
 	//	for(int i = 0; i < 10000; i++)
 			for(int j = 0; j < 10000; j++) ;
    }
