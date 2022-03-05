@@ -56,7 +56,7 @@ int main()
     std::cout << "\x1b[2J";
     while (true)
     {
-        memset(b, 32, 1760);
+        memset(b, 32, 1760);  // X:Width(80) Y:Height(22) 
         memset(zb, 0, 7040);
         for (i = -1; i < 1; i += 0.03)
         {
@@ -81,7 +81,7 @@ int main()
 
                 
                 float D = 1 / (z+5); // 1/(z + K2) //K2 is taken as 5
-                float X = 40 + 30*D*x, Y = 12 + 15*D*y;
+                int X = 40 + 50*D*x, Y = 12 + 50*D*y;
                 
                 
                 // Varible to store rendered ASCII character in the buffer.
@@ -93,6 +93,7 @@ int main()
                 float Ny = (j>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
                 float Nz = (k>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
                 int N = 8 * (Nx*sinB + cosB*(Ny*cosA - Nz*sinA) - Ny*sinA - Nz*cosA);
+                //int N = 8;
                 if (22 > Y && Y > 0 && X > 0 && 80 > X && D > zb[o])
                 {
                     // String D in z-buffer
@@ -112,8 +113,8 @@ int main()
             B += 0.00002;
         }
         
-	//	for(int i = 0; i < 10000; i++)
-			for(int j = 0; j < 10000; j++) ;
+		for(int i = 0; i < 10000; i++)
+			for(int j = 0; j < 1000; j++) ;
    }
 
 
