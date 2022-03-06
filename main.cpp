@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
+#include <unistd.h>
 // An implementation of gotoxy() function for smoother animation
 // without scrolling or clearing screen.
 // void gotoxy(SHORT x, SHORT y)
@@ -45,10 +46,10 @@ int main()
     float A = 0, B = 0;
 
     //phi, theta
-    float i, j;
+    float i, j, k2[2];
     
     //K1
-    int k;
+    int K;
 
     //z-buffer
     float zb[1760];
@@ -68,53 +69,57 @@ int main()
                 float cosA = cos(A); // cos(A)
                 float cosB = cos(B); // cos(B)
                 float sinB = sin(B); // sin(B)
-                float kp = 1 - fabs(i) - fabs(j);
-                float km = -kp;
-                
-                float zm = km*cosA;
-                float zp = kp*cosA;
-                float k = (zm<zp) ? km : kp;
-
-                float x = i*cosB-sinB*(j*cosA-k*sinA);
-                float y = i*sinB+cosB*(j*cosA-k*sinA);
-                float z = j*sinA + k*cosA;
+                k2[0] = 1 - fabs(i) - fabs(j);
+                k2[1] = -k2[0];
 
                 
-                float D = 1 / (z+5); // 1/(z + K2) //K2 is taken as 5
-                int X = 40 + 80*D*x, Y = 12 + 50*D*y;
-                
-                
-                // Varible to store rendered ASCII character in the buffer.
-                // We are using a 1D array.
-                int o = X + 80 * Y;
 
-                // Luminance
-                float Nx = (i>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
-                float Ny = (j>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
-                float Nz = (k>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
-                int N = 8 * (Nx*sinB + cosB*(Ny*cosA - Nz*sinA) - Ny*sinA - Nz*cosA);
-                //int N = 8;
-                if (22 > Y && Y > 0 && X > 0 && 80 > X && D > zb[o])
-                {
-                    // String D in z-buffer
-                    zb[o] = D;
+                for(int t=0; t<2; t++) { // k have two solutions
+                    float k = k2[t];
+                    float x = i*cosB-sinB*(j*cosA-k*sinA);
+                    float y = i*sinB+cosB*(j*cosA-k*sinA);
+                    float z = j*sinA + k*cosA;
+                    
+                    float D = 1 / (z+5); // 1/(z + K2) //K2 is taken as 5
+                    int X = 40 + 80*D*x, Y = 12 + 50*D*y;
+                    
+                    // Varible to store rendered ASCII character in the buffer.
+                    // We are using a 1D array.
+                    int o = X + 80 * Y;
 
-                    // Choosing ASCII character based on Luminance and storing it in buffer
-                    b[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
+                    // Luminance
+                    float Nx = (i>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
+                    float Ny = (j>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
+                    float Nz = (k>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
+                    int N = 7 * (Nx*sinB + cosB*(Ny*cosA - Nz*sinA) - Ny*sinA - Nz*cosA) + 1;
+                    //int N = 8;
+                    if (22 > Y && Y > 0 && X > 0 && 80 > X && D > zb[o])
+                    {
+                        // String D in z-buffer
+                        zb[o] = D;
+
+                        // Choosing ASCII character based on Luminance and storing it in buffer
+                        b[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
+                    }
                 }
+            
             }
         }
         
         std::cout << "\x1b[H";
-        for (k = 0; k < 1761; k++)
+        for (K = 0; K < 1761; K++)
         {
-            putchar(k % 80 ? b[k] : 10);
+            putchar(K % 80 ? b[K] : 10);
             A += 0.00004;
             B += 0.00002;
         }
         
-		for(int i = 0; i < 10000; i++)
-			for(int j = 0; j < 10000; j++) ;
+        if (A > 6.28) A-=6.28;
+        if (B > 6.28) B-=6.28;
+
+        usleep(30000);
+		//for(int i = 0; i < 1000; i++)
+		//	for(int j = 0; j < 10000; j++) ;
    }
 
 
