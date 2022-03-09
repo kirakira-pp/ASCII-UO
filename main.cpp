@@ -91,7 +91,7 @@ int main()
                     float Nx = (i>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
                     float Ny = (j>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
                     float Nz = (k>0)? sqrt(1.0/3.0) : -sqrt(1.0/3.0);
-                    int N = 7 * (Nx*sinB + cosB*(Ny*cosA - Nz*sinA) - Ny*sinA - Nz*cosA) + 1;
+                    int N = 8 * (-Nx*sinB - cosB*(Ny*cosA - Nz*sinA) - Ny*sinA - Nz*cosA);
                     //int N = 8;
                     if (22 > Y && Y > 0 && X > 0 && 80 > X && D > zb[o])
                     {
@@ -110,14 +110,14 @@ int main()
         for (K = 0; K < 1761; K++)
         {
             putchar(K % 80 ? b[K] : 10);
-            A += 0.00004;
-            B += 0.00002;
+            A += 0.00002;
+            B += 0.00001;
         }
         
         if (A > 6.28) A-=6.28;
         if (B > 6.28) B-=6.28;
 
-        usleep(30000);
+        usleep(20000);
 		//for(int i = 0; i < 1000; i++)
 		//	for(int j = 0; j < 10000; j++) ;
    }
